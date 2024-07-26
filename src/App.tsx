@@ -1,35 +1,72 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [budget, setBudget] = useState<number>(30000);
+  const [receipts, setReceipts] = useState<number[]>([]);
+  const [result, setResult] = useState<number[]>([]);
+
+  const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBudget(Number(e.target.value));
+  };
+
+  const handleReceiptsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const values = e.target.value.split(',').map(Number);
+    setReceipts(values);
+  };
+
+  const calculateMaxCombination = () => {
+    const dp: number[][] = Array(receipts.length + 1).fill(null).map(() => Array(budget + 1).fill(0));
+
+    for (let i = 1; i <= receipts.length; i++) {
+      for (let w = 1; w <= budget; w++) {
+        if (receipts[i - 1] <= w) {
+          dp[i][w] = Math.max(dp[i - 1][w], dp[i - 1][w - receipts[i - 1]] + receipts[i - 1]);
+        } else {
+          dp[i][w] = dp[i - 1][w];
+        }
+      }
+    }
+
+    let w = budget;
+    const selectedReceipts: number[] = [];
+    for (let i = receipts.length; i > 0 && w > 0; i--) {
+      if (dp[i][w] !== dp[i - 1][w]) {
+        selectedReceipts.push(receipts[i - 1]);
+        w -= receipts[i - 1];
+      }
+    }
+
+    setResult(selectedReceipts);
+  };
 
   return (
-    <>
+    <div>
+      <h1>経費計算DPアプリ</h1>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <label>
+          経費:
+          <input type="number" value={budget} onChange={handleBudgetChange} />円
+        </label>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+      <div>
+        <label>
+          レシート金額 (comma separated):
+          <input type="text" onChange={handleReceiptsChange} />
+        </label>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      <button onClick={calculateMaxCombination}>Calculate</button>
+      <div>
+        <h2>Selected Receipts:</h2>
+        <ul>
+          {result.map((receipt, index) => (
+            <li key={index}>{receipt}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
+
 
 export default App
