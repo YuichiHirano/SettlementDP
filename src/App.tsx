@@ -1,43 +1,35 @@
-import { useState } from 'react'
-import './App.css'
+import React, { useState } from 'react';
+import './App.css';
+import { calculateMaxCombination } from './dpUtils';
 
 function App() {
   const [budget, setBudget] = useState<number>(30000);
-  const [receipts, setReceipts] = useState<number[]>([]);
+  const [receipts, setReceipts] = useState<number[]>([0]);
   const [result, setResult] = useState<number[]>([]);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
 
   const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBudget(Number(e.target.value));
   };
 
-  const handleReceiptsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const values = e.target.value.split(',').map(Number);
-    setReceipts(values);
+  const handleReceiptChange = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newReceipts = [...receipts];
+    newReceipts[index] = Number(e.target.value);
+    setReceipts(newReceipts);
   };
 
-  const calculateMaxCombination = () => {
-    const dp: number[][] = Array(receipts.length + 1).fill(null).map(() => Array(budget + 1).fill(0));
+  const addReceiptField = () => {
+    setReceipts([...receipts, 0]);
+  };
 
-    for (let i = 1; i <= receipts.length; i++) {
-      for (let w = 1; w <= budget; w++) {
-        if (receipts[i - 1] <= w) {
-          dp[i][w] = Math.max(dp[i - 1][w], dp[i - 1][w - receipts[i - 1]] + receipts[i - 1]);
-        } else {
-          dp[i][w] = dp[i - 1][w];
-        }
-      }
-    }
+  const removeReceiptField = (index: number) => () => {
+    setReceipts(receipts.filter((_, i) => i !== index));
+  };
 
-    let w = budget;
-    const selectedReceipts: number[] = [];
-    for (let i = receipts.length; i > 0 && w > 0; i--) {
-      if (dp[i][w] !== dp[i - 1][w]) {
-        selectedReceipts.push(receipts[i - 1]);
-        w -= receipts[i - 1];
-      }
-    }
-
+  const handleCalculateClick = () => {
+    const { selectedReceipts, totalAmount } = calculateMaxCombination(receipts, budget);
     setResult(selectedReceipts);
+    setTotalAmount(totalAmount);
   };
 
   return (
@@ -50,23 +42,27 @@ function App() {
         </label>
       </div>
       <div>
-        <label>
-          レシート金額 (comma separated):
-          <input type="text" onChange={handleReceiptsChange} />
-        </label>
+        <label>レシート金額:</label>
+        {receipts.map((receipt, index) => (
+          <div key={index}>
+            <input type="number" value={receipt} onChange={handleReceiptChange(index)} />円
+            <button onClick={removeReceiptField(index)}>-</button>
+          </div>
+        ))}
+        <button onClick={addReceiptField}>+</button>
       </div>
-      <button onClick={calculateMaxCombination}>Calculate</button>
+      <button onClick={handleCalculateClick}>Calculate</button>
       <div>
-        <h2>Selected Receipts:</h2>
+        <h2>選ばれたレシート:</h2>
         <ul>
           {result.map((receipt, index) => (
-            <li key={index}>{receipt}</li>
+            <li key={index}>{receipt}円</li>
           ))}
         </ul>
+        <h3>合計金額: {totalAmount}円</h3>
       </div>
     </div>
   );
-};
+}
 
-
-export default App
+export default App;
