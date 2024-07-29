@@ -44,7 +44,7 @@ function App() {
   };
 
   return (
-    <Container>
+    <Container sx={{ bgcolor: '#ffffff', color: '#000000', padding: '20px', borderRadius: '8px' }}>
       <Typography variant="h4" gutterBottom>経費計算DPアプリ</Typography>
       <TextField
         label="経費"
