@@ -30,7 +30,7 @@ function App() {
   };
 
   const addReceiptField = () => {
-    setReceipts([...receipts, 0]);
+    setReceipts([...receipts, 500]);
   };
 
   const removeReceiptField = (index: number) => () => {
