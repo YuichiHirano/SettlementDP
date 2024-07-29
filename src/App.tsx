@@ -15,7 +15,7 @@ const containerStyle = {
 
 function App() {
   const [budget, setBudget] = useState<number>(30000);
-  const [receipts, setReceipts] = useState<number[]>([0]);
+  const [receipts, setReceipts] = useState<number[]>([500]);
   const [result, setResult] = useState<number[]>([]);
   const [totalAmount, setTotalAmount] = useState<number>(0);
 
