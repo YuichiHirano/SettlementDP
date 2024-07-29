@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import { calculateMaxCombination } from './dpUtils';
 import { Container, TextField, Button, Box, Typography, IconButton, List, ListItem } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import CalculateIcon from '@mui/icons-material/Calculate';
+
+const LOCAL_STORAGE_KEY ="settlementDP";
 
 const containerStyle = {
   display: 'flex',
@@ -13,11 +15,25 @@ const containerStyle = {
   gap: '20px' // ボタン間のスペースを確保
 };
 
+const loadInitialData = () => {
+  const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+  if (savedData) {
+    const parsedData = JSON.parse(savedData);
+    return { budget: parsedData.budget, receipts: parsedData.receipts };
+  }
+  return { budget: 30000, receipts: [500] };
+};
+const initialState = loadInitialData();
+
 function App() {
-  const [budget, setBudget] = useState<number>(30000);
-  const [receipts, setReceipts] = useState<number[]>([500]);
+  const [budget, setBudget] = useState<number>(initialState.budget);
+  const [receipts, setReceipts] = useState<number[]>(initialState.receipts);
   const [result, setResult] = useState<number[]>([]);
   const [totalAmount, setTotalAmount] = useState<number>(0);
+
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ budget, receipts }));
+  }, [budget, receipts]);
 
   const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBudget(Number(e.target.value));
