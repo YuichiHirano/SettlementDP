@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import './App.css';
 import { calculateMaxCombination } from './dpUtils';
+import { Container, TextField, Button, Box, Typography, IconButton, List, ListItem } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import CalculateIcon from '@mui/icons-material/Calculate';
+
+const containerStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center', // 中央揃えオプション
+  gap: '20px' // ボタン間のスペースを確保
+};
 
 function App() {
   const [budget, setBudget] = useState<number>(30000);
@@ -33,36 +44,64 @@ function App() {
   };
 
   return (
-    <div>
-      <h1>経費計算DPアプリ</h1>
-      <div>
-        <label>
-          経費:
-          <input type="number" value={budget} onChange={handleBudgetChange} />円
-        </label>
-      </div>
-      <div>
-        <label>レシート金額:</label>
-        {receipts.map((receipt, index) => (
-          <div key={index}>
-            <input type="number" value={receipt} onChange={handleReceiptChange(index)} />円
-            <button onClick={removeReceiptField(index)}>-</button>
-          </div>
+    <Container>
+      <Typography variant="h4" gutterBottom>経費計算DPアプリ</Typography>
+      <TextField
+        label="経費"
+        type="number"
+        value={budget}
+        onChange={handleBudgetChange}
+        variant="outlined"
+        margin="normal"
+        fullWidth
+      />
+      <Typography variant="h6">レシート金額</Typography>
+      {receipts.map((receipt, index) => (
+        <div key={index}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <TextField
+              type="number"
+              value={receipt}
+              onChange={handleReceiptChange(index)}
+              variant="outlined"
+              margin="normal"
+              fullWidth
+            />円
+            <IconButton onClick={removeReceiptField(index)}>
+              <DeleteIcon />
+            </IconButton>
+          </Box>
+        </div>
+      ))}
+      <Box sx={containerStyle}>
+        <Button
+          startIcon={<AddIcon />}
+          onClick={addReceiptField}
+          variant="contained"
+          color="primary"
+        >
+          レシートを追加
+        </Button>
+
+        <Button
+          startIcon={<CalculateIcon />} // 計算するボタンにもアイコンを追加(例として計算アイコン)
+          onClick={handleCalculateClick}
+          variant="contained"
+          color="secondary"
+        >
+          計算する
+        </Button>
+      </Box>
+      <Typography variant="h5" style={{ marginTop: '30px' }}>選ばれたレシート:</Typography>
+      <List>
+        {result.map((receipt, index) => (
+          <ListItem key={index}>{receipt}円</ListItem>
         ))}
-        <button onClick={addReceiptField}>+</button>
-      </div>
-      <button onClick={handleCalculateClick}>Calculate</button>
-      <div>
-        <h2>選ばれたレシート:</h2>
-        <ul>
-          {result.map((receipt, index) => (
-            <li key={index}>{receipt}円</li>
-          ))}
-        </ul>
-        <h3>合計金額: {totalAmount}円</h3>
-      </div>
-    </div>
+      </List>
+      <Typography variant="h6">合計金額: {totalAmount}円</Typography>
+    </Container>
   );
 }
 
 export default App;
+
