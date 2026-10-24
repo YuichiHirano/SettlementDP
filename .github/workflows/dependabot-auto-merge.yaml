@@ -1,4 +1,4 @@
-name: Dependabot patch auto-merge
+name: Dependabot minor and patch auto-merge
 
 on:
   pull_request_target:
@@ -9,7 +9,7 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: dependabot-patch-${{ github.event.pull_request.number }}
+  group: dependabot-auto-merge-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
@@ -30,8 +30,9 @@ jobs:
   verify:
     needs: metadata
     if: >-
-      needs.metadata.outputs.update-type == 'version-update:semver-patch' &&
-      needs.metadata.outputs.package-ecosystem == 'npm'
+      needs.metadata.outputs.package-ecosystem == 'npm' &&
+      (needs.metadata.outputs.update-type == 'version-update:semver-patch' ||
+       needs.metadata.outputs.update-type == 'version-update:semver-minor')
     runs-on: ubuntu-latest
     permissions:
       contents: read
