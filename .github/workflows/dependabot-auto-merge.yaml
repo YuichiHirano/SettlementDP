@@ -29,8 +29,9 @@ jobs:
 
   verify:
     needs: metadata
+    # fetch-metadata reports the npm ecosystem as npm_and_yarn.
     if: >-
-      needs.metadata.outputs.package-ecosystem == 'npm' &&
+      needs.metadata.outputs.package-ecosystem == 'npm_and_yarn' &&
       (needs.metadata.outputs.update-type == 'version-update:semver-patch' ||
        needs.metadata.outputs.update-type == 'version-update:semver-minor')
     runs-on: ubuntu-latest
