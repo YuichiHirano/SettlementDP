@@ -1,2 +1,6 @@
 allowBuilds:
   esbuild: true
+
+# GitHub's dependency graph cannot read pnpm 12's two-document lockfile yet.
+# CI still installs the version pinned in package.json via pnpm/action-setup.
+pmOnFail: ignore
