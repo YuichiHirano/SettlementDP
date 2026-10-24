@@ -18,3 +18,7 @@ pnpm run lint
 pnpm run test
 pnpm run build
 ```
+
+## 依存関係の更新
+
+Dependabot は毎週、pnpm の依存関係と GitHub Actions の更新 PR を作成します。pnpm のパッチ更新は lint・テスト・build が成功した場合に自動マージされます。マイナー・メジャー更新と GitHub Actions の更新は手動で確認します。
